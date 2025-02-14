@@ -12,7 +12,7 @@ class BFNumberPickerView: UIView {
     
     private var pickerFont: UIFont?
     
-    convenience init(frame: CGRect, number: Int, font: UIFont) {
+    convenience init(frame: CGRect, font: UIFont) {
         self.init(frame: frame)
         pickerFont = font
     }
@@ -52,6 +52,8 @@ class BFNumberPickerView: UIView {
     }
     
     private func initSubviews(number: Int) {
+        self.subviews.forEach { $0.removeFromSuperview() }
+        
         let formattedNumber = formatNumberWithCommas(number)
         
         var x: CGFloat = 0
@@ -63,9 +65,9 @@ class BFNumberPickerView: UIView {
         let size = text.size(withAttributes: attributes)
         let width: CGFloat = size.width * 2
         let height: CGFloat = size.height * 2
-        let pickerAttributes: [NSAttributedString.Key: Any] = [
+        let separatorAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.systemYellow, // 設定顏色
-            .font: pickerFont! // 設定字體
+            .font: UIFont.systemFont(ofSize: 24) // 設定字體
         ]
         
         for char in formattedNumber {
@@ -77,26 +79,38 @@ class BFNumberPickerView: UIView {
                 addSubview(pickerSubView)
                 x += pickerSubView.frame.width - size.width
             } else if char == "," {
+                let pickerView: BFNumberPickerSubView = self.subviews.last as! BFNumberPickerSubView
+                let rowHeight = pickerView.pickerView.rowSize(forComponent: 0).height
+                let pickerHeight = pickerView.bounds.height
+                let maskHeight = (pickerHeight - rowHeight) / 2
+                
                 x += (size.width / 2)
                 let separatorLabel = UILabel()
-                separatorLabel.attributedText = NSAttributedString(string: String(char), attributes: pickerAttributes)
+                separatorLabel.attributedText = NSAttributedString(string: String(char), attributes: separatorAttributes)
                 separatorLabel.sizeToFit()
-                separatorLabel.frame = CGRect(x: x, y: 0, width: separatorLabel.frame.width, height: height)
+                separatorLabel.frame = CGRect(x: x, y: height - maskHeight - separatorLabel.frame.height, width: separatorLabel.frame.width, height: separatorLabel.frame.height)
                 separatorLabel.contentMode = .bottom
                 addSubview(separatorLabel)
                 x = separatorLabel.frame.maxX - (size.width / 2)
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.number = number
-        }
-        
-        self.frame.size.width = self.subviews.last?.frame.maxX ?? 0
-        
-        if let superview = self.superview {
-            let centerX = (superview.frame.width - self.frame.width) / 2
-            self.frame.origin.x = centerX
+        if ((self.subviews.last?.frame.maxX)! - self.frame.size.width > 10 && pickerFont!.pointSize > 24) {
+            let smallerFont = pickerFont!.withSize(pickerFont!.pointSize - 1)
+            pickerFont = smallerFont
+            initSubviews(number: number)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.number = number
+            }
+            
+            self.frame.size.width = self.subviews.last?.frame.maxX ?? 0
+            self.frame.size.height = self.subviews.last?.frame.maxY ?? 0
+            
+            if let superview = self.superview {
+                let centerX = (superview.frame.width - self.frame.width) / 2
+                self.frame.origin.x = centerX
+            }
         }
     }
     
@@ -112,6 +126,9 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     let pickerView = UIPickerView()
     let numbers = Array(0...9).map { String($0) }
     
+    private let topMask = UIView()
+    private let bottomMask = UIView()
+    
     convenience init(frame: CGRect, font: UIFont) {
         self.init(frame: frame)
         pickerFont = font
@@ -121,12 +138,14 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
         super.init(frame: frame)
         backgroundColor = UIColor.clear
         self.isUserInteractionEnabled = false
+        self.clipsToBounds = true
         
         pickerView.delegate = self
         pickerView.dataSource = self
         addSubview(pickerView)
-        
         pickerView.frame = self.bounds
+        
+        setupMaskViews()
         
         DispatchQueue.main.async {
             if let overlay = self.pickerView.subviews.last {
@@ -137,6 +156,26 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupMaskViews() {
+        topMask.backgroundColor = UIColor.blue
+        bottomMask.backgroundColor = UIColor.green
+        topMask.isUserInteractionEnabled = false
+        bottomMask.isUserInteractionEnabled = false
+        addSubview(topMask)
+        addSubview(bottomMask)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let rowHeight = pickerView.rowSize(forComponent: 0).height
+        let pickerHeight = pickerView.bounds.height
+        let maskHeight = (pickerHeight - rowHeight) / 2
+        
+        topMask.frame = CGRect(x: 0, y: 0, width: self.bounds.width, height: maskHeight)
+        bottomMask.frame = CGRect(x: 0, y: pickerHeight - maskHeight, width: self.bounds.width, height: maskHeight)
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -161,15 +200,15 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let pickerAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.systemYellow, // 設定顏色
-            .font: pickerFont! // 設定字體
+            .foregroundColor: UIColor.systemYellow,
+            .font: pickerFont!
         ]
         let text = numbers[row % numbers.count]
         return NSAttributedString(string: text, attributes: pickerAttributes)
     }
     
     @objc func selectRow(index: Int) {
-        let middleIndex = index + numbers.count * 5 // 讓選擇的數字在滾輪中央
+        let middleIndex = index + numbers.count * 5
         pickerView.selectRow(middleIndex, inComponent: 0, animated: true)
     }
 }
