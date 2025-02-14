@@ -8,15 +8,16 @@
 import UIKit
 import SnapKit
 
-let pickerFont: UIFont = UIFont.systemFont(ofSize: 24, weight: .bold)
-let pickerAttributes: [NSAttributedString.Key: Any] = [
-    .foregroundColor: UIColor.systemYellow, // 設定顏色
-    .font: pickerFont // 設定字體
-]
-
 class BFNumberPickerView: UIView {
     
-    override init(frame: CGRect) {
+    private var pickerFont: UIFont?
+    
+    convenience init(frame: CGRect, number: Int, font: UIFont) {
+        self.init(frame: frame)
+        pickerFont = font
+    }
+    
+    private override init(frame: CGRect) {
         super.init(frame: frame)
     }
     
@@ -56,16 +57,20 @@ class BFNumberPickerView: UIView {
         var x: CGFloat = 0
         var digitIndex = formattedNumber.filter { $0.isNumber }.count // 最高位數字的索引
         
-        let font = pickerFont
+        let font: UIFont = pickerFont!
         let text = "9"
         let attributes: [NSAttributedString.Key: Any] = [.font: font]
         let size = text.size(withAttributes: attributes)
         let width: CGFloat = size.width * 2
         let height: CGFloat = size.height * 2
+        let pickerAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemYellow, // 設定顏色
+            .font: pickerFont! // 設定字體
+        ]
         
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView(frame: CGRect(x: x, y: 0, width: width, height: height))
+                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), font: pickerFont!)
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
                 digitIndex -= 1 // 更新 tag 為下一個數字
@@ -82,9 +87,11 @@ class BFNumberPickerView: UIView {
                 x = separatorLabel.frame.maxX - (size.width / 2)
             }
         }
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.number = number
         }
+        
         self.frame.size.width = self.subviews.last?.frame.maxX ?? 0
         
         if let superview = self.superview {
@@ -101,8 +108,14 @@ class BFNumberPickerView: UIView {
 }
 
 class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
+    private var pickerFont: UIFont?
     let pickerView = UIPickerView()
     let numbers = Array(0...9).map { String($0) }
+    
+    convenience init(frame: CGRect, font: UIFont) {
+        self.init(frame: frame)
+        pickerFont = font
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -147,6 +160,10 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     }
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        let pickerAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.systemYellow, // 設定顏色
+            .font: pickerFont! // 設定字體
+        ]
         let text = numbers[row % numbers.count]
         return NSAttributedString(string: text, attributes: pickerAttributes)
     }
