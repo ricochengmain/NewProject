@@ -17,7 +17,7 @@ class ViewController: UIViewController {
         view.backgroundColor = UIColor.systemRed
         view.addSubview(baseView)
         baseView.snp.makeConstraints { make in
-            make.width.equalTo(UIScreen.main.bounds.width * 0.2)
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
             make.height.equalTo(50)
             make.center.equalToSuperview()
         }

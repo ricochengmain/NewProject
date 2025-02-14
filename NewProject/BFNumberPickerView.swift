@@ -104,17 +104,22 @@ class BFNumberPickerView: UIView {
             let maxX = lastSubview.frame.maxX + lastSubview.frame.minX
             let maxY = lastSubview.frame.height
             
-            let scaleX = originFrame.size.width / maxX
-            let scaleY = originFrame.size.height / maxY
-            
-            // 取最小的縮放比例，確保等比縮小且不超過 originFrame
-            let scale = scaleX < scaleY ? max(1.0, scaleX, scaleY) : min(1.0, scaleX, scaleY)
+            let bottomSize = originFrame.size
+            let topSize = CGSize(width: maxX, height: maxY)
+
+            // 計算寬度與高度的縮放比例
+            let widthRatio = bottomSize.width / topSize.width
+            let heightRatio = bottomSize.height / topSize.height
+
+            // 選擇較小的縮放比例，確保縮放後 topSize 剛好填滿 bottomSize 的寬或高
+            let scale = min(widthRatio, heightRatio)
+
 
             // 縮放視圖
             self.transform = CGAffineTransform(scaleX: scale, y: scale)
 
             let scaleFrame: CGRect = self.frame
-            let y = scaleX < scaleY ? (superview.bounds.height - scaleFrame.height) / 2 : 0
+            let y = (superview.bounds.height - scaleFrame.height) / 2
             self.frame = CGRect(x: (superview.bounds.width - scaleFrame.width) / 2, y: y, width: scaleFrame.width, height: scaleFrame.height)
         }
 
