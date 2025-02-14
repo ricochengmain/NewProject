@@ -38,6 +38,7 @@ class BFNumberPickerView: UIView {
     
     convenience init(frame: CGRect, font: UIFont) {
         self.init(frame: frame)
+        originWidth = frame.width
         pickerFont = font
     }
     
@@ -50,6 +51,7 @@ class BFNumberPickerView: UIView {
     }
     
     private var pickerFont: UIFont?
+    private var originWidth: CGFloat = 0
     
     private func initSubviews(number: Int) {
         self.subviews.forEach { $0.removeFromSuperview() }
@@ -97,7 +99,7 @@ class BFNumberPickerView: UIView {
             }
         }
         
-        if ((self.subviews.last?.frame.maxX)! - self.frame.size.width > 10 && pickerFont!.pointSize > 24) {
+        if ((self.subviews.last?.frame.maxX)! - originWidth > 4 && pickerFont!.pointSize > 24) {
             let smallerFont = pickerFont!.withSize(pickerFont!.pointSize - 1)
             pickerFont = smallerFont
             initSubviews(number: number)
@@ -106,7 +108,7 @@ class BFNumberPickerView: UIView {
                 self.number = number
             }
             
-            self.frame.size.width = self.subviews.last?.frame.maxX ?? 0
+            self.frame.size.width = max(originWidth, self.subviews.last?.frame.maxX ?? 0)
             self.frame.size.height = self.subviews.last?.frame.maxY ?? 0
             
             if let superview = self.superview {
