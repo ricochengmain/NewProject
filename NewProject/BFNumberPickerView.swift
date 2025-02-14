@@ -73,6 +73,7 @@ class BFNumberPickerView: UIView {
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
                 let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), font: pickerFont!)
+                pickerSubView.backgroundColor = UIColor.clear
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
                 digitIndex -= 1 // 更新 tag 為下一個數字
@@ -86,6 +87,7 @@ class BFNumberPickerView: UIView {
                 
                 x += (size.width / 2)
                 let separatorLabel = UILabel()
+                separatorLabel.backgroundColor = UIColor.clear
                 separatorLabel.attributedText = NSAttributedString(string: String(char), attributes: separatorAttributes)
                 separatorLabel.sizeToFit()
                 separatorLabel.frame = CGRect(x: x, y: height - maskHeight - separatorLabel.frame.height, width: separatorLabel.frame.width, height: separatorLabel.frame.height)
@@ -159,8 +161,6 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     }
     
     private func setupMaskViews() {
-        topMask.backgroundColor = UIColor.white
-        bottomMask.backgroundColor = UIColor.white
         topMask.isUserInteractionEnabled = false
         bottomMask.isUserInteractionEnabled = false
         addSubview(topMask)
@@ -169,6 +169,8 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        topMask.backgroundColor = self.superview?.backgroundColor
+        bottomMask.backgroundColor = self.superview?.backgroundColor
         
         let rowHeight = pickerView.rowSize(forComponent: 0).height
         let pickerHeight = pickerView.bounds.height

@@ -9,13 +9,13 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    let numberPickerView = BFNumberPickerView.init(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 50), font: UIFont.systemFont(ofSize: 24, weight: .bold))
+    let numberPickerView = BFNumberPickerView.init(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 50), font: UIFont.boldSystemFont(ofSize: 24))
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = UIColor.systemRed
         view.addSubview(numberPickerView)
-        numberPickerView.backgroundColor = UIColor.clear
+        numberPickerView.backgroundColor = view.backgroundColor
         
         let randomButton = UIButton(type: .system)
         randomButton.setTitle("隨機數字", for: .normal)
