@@ -74,7 +74,7 @@ class BFNumberPickerView: UIView {
         
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), font: pickerFont!)
+                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: (self.frame.size.height - height) * 0.5, width: width, height: height), font: pickerFont!)
                 pickerSubView.backgroundColor = UIColor.clear
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
@@ -109,7 +109,6 @@ class BFNumberPickerView: UIView {
             }
             
             self.frame.size.width = max(originWidth, self.subviews.last?.frame.maxX ?? 0)
-            self.frame.size.height = self.subviews.last?.frame.maxY ?? 0
             
             if let superview = self.superview {
                 let centerX = (superview.frame.width - self.frame.width) / 2

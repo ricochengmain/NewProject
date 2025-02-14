@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    let numberPickerView = BFNumberPickerView.init(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width * 0.3, height: 50), font: UIFont.boldSystemFont(ofSize: 50))
+    let numberPickerView = BFNumberPickerView.init(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width * 0.3, height: 50), font: UIFont.boldSystemFont(ofSize: 60))
     
     override func viewDidLoad() {
         super.viewDidLoad()
