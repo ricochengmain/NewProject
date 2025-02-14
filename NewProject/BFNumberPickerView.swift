@@ -10,21 +10,6 @@ import SnapKit
 
 class BFNumberPickerView: UIView {
     
-    private var pickerFont: UIFont?
-    
-    convenience init(frame: CGRect, font: UIFont) {
-        self.init(frame: frame)
-        pickerFont = font
-    }
-    
-    private override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     var number: Int = 0 {
         didSet {
             let formattedNumber = formatNumberWithCommas(number)
@@ -50,6 +35,21 @@ class BFNumberPickerView: UIView {
             }
         }
     }
+    
+    convenience init(frame: CGRect, font: UIFont) {
+        self.init(frame: frame)
+        pickerFont = font
+    }
+    
+    private override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private var pickerFont: UIFont?
     
     private func initSubviews(number: Int) {
         self.subviews.forEach { $0.removeFromSuperview() }
@@ -79,9 +79,9 @@ class BFNumberPickerView: UIView {
                 addSubview(pickerSubView)
                 x += pickerSubView.frame.width - size.width
             } else if char == "," {
-                let pickerView: BFNumberPickerSubView = self.subviews.last as! BFNumberPickerSubView
-                let rowHeight = pickerView.pickerView.rowSize(forComponent: 0).height
-                let pickerHeight = pickerView.bounds.height
+                let numberPickerSubView: BFNumberPickerSubView = self.subviews.last as! BFNumberPickerSubView
+                let rowHeight = numberPickerSubView.pickerView.rowSize(forComponent: 0).height
+                let pickerHeight = numberPickerSubView.bounds.height
                 let maskHeight = (pickerHeight - rowHeight) / 2
                 
                 x += (size.width / 2)
@@ -123,8 +123,8 @@ class BFNumberPickerView: UIView {
 
 class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     private var pickerFont: UIFont?
-    let pickerView = UIPickerView()
-    let numbers = Array(0...9).map { String($0) }
+    fileprivate let pickerView = UIPickerView()
+    private let numbers = Array(0...9).map { String($0) }
     
     private let topMask = UIView()
     private let bottomMask = UIView()
@@ -159,8 +159,8 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     }
     
     private func setupMaskViews() {
-        topMask.backgroundColor = UIColor.blue
-        bottomMask.backgroundColor = UIColor.green
+        topMask.backgroundColor = UIColor.white
+        bottomMask.backgroundColor = UIColor.white
         topMask.isUserInteractionEnabled = false
         bottomMask.isUserInteractionEnabled = false
         addSubview(topMask)
@@ -178,27 +178,27 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
         bottomMask.frame = CGRect(x: 0, y: pickerHeight - maskHeight, width: self.bounds.width, height: maskHeight)
     }
     
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+    internal func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    internal func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return numbers.count * 10 // 讓滾動更流暢
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    internal func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return numbers[row % numbers.count]
     }
     
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    internal func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         print("Selected: \(numbers[row % numbers.count])")
     }
     
-    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+    internal func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         return self.frame.width
     }
     
-    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    internal func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let pickerAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.systemYellow,
             .font: pickerFont!
@@ -207,7 +207,7 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
         return NSAttributedString(string: text, attributes: pickerAttributes)
     }
     
-    @objc func selectRow(index: Int) {
+    @objc fileprivate  func selectRow(index: Int) {
         let middleIndex = index + numbers.count * 5
         pickerView.selectRow(middleIndex, inComponent: 0, animated: true)
     }
