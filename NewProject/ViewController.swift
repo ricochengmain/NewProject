@@ -9,21 +9,30 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let numberPickerView = BFNumberPickerView(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width, height: 50))
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor.white
+        numberPickerView.backgroundColor = UIColor.systemRed
+        view.addSubview(numberPickerView)
 
-        // Do any additional setup after loading the view.
+        
+        let randomButton = UIButton(type: .system)
+        randomButton.setTitle("隨機數字", for: .normal)
+        randomButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        randomButton.backgroundColor = UIColor.systemBlue
+        randomButton.setTitleColor(.white, for: .normal)
+        randomButton.layer.cornerRadius = 8
+        randomButton.frame = CGRect(x: 50, y: 200, width: 150, height: 50)
+        randomButton.addTarget(self, action: #selector(generateRandomNumber), for: .touchUpInside)
+        
+        view.addSubview(randomButton)
+        self.generateRandomNumber()
     }
-    
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    @objc private func generateRandomNumber() {
+        let randomNum = Int.random(in: 0...9999999999) // 生成 10 位隨機數
+        numberPickerView.number = randomNum // 更新數字顯示
     }
-    */
-
 }

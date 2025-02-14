@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		170A9FA32D093FDC00293F37 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170A9FA22D093FDC00293F37 /* ViewController.swift */; };
+		17C2AFD12D5DE8B4000F5733 /* BFNumberPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C2AFD02D5DE8B4000F5733 /* BFNumberPickerView.swift */; };
 		17F90F5D2AE67C7A002BEFD0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F90F5C2AE67C7A002BEFD0 /* AppDelegate.swift */; };
 		17F90F5F2AE67C7A002BEFD0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17F90F5E2AE67C7A002BEFD0 /* SceneDelegate.swift */; };
 		17F90F642AE67C7A002BEFD0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 17F90F622AE67C7A002BEFD0 /* Main.storyboard */; };
@@ -20,6 +21,7 @@
 		01404E22E149981DF8A08D47 /* Pods-Serve.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Serve.release.xcconfig"; path = "Target Support Files/Pods-Serve/Pods-Serve.release.xcconfig"; sourceTree = "<group>"; };
 		0F633CBF4DF47B3C9374F1CC /* Pods-NewProject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NewProject.release.xcconfig"; path = "Target Support Files/Pods-NewProject/Pods-NewProject.release.xcconfig"; sourceTree = "<group>"; };
 		170A9FA22D093FDC00293F37 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		17C2AFD02D5DE8B4000F5733 /* BFNumberPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BFNumberPickerView.swift; sourceTree = "<group>"; };
 		17F90F5A2AE67C7A002BEFD0 /* NewProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17F90F5C2AE67C7A002BEFD0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		17F90F5E2AE67C7A002BEFD0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				17F90F622AE67C7A002BEFD0 /* Main.storyboard */,
 				17F90F5E2AE67C7A002BEFD0 /* SceneDelegate.swift */,
 				170A9FA22D093FDC00293F37 /* ViewController.swift */,
+				17C2AFD02D5DE8B4000F5733 /* BFNumberPickerView.swift */,
 			);
 			path = NewProject;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				170A9FA32D093FDC00293F37 /* ViewController.swift in Sources */,
+				17C2AFD12D5DE8B4000F5733 /* BFNumberPickerView.swift in Sources */,
 				17F90F5D2AE67C7A002BEFD0 /* AppDelegate.swift in Sources */,
 				17F90F5F2AE67C7A002BEFD0 /* SceneDelegate.swift in Sources */,
 			);
