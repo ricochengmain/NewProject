@@ -8,14 +8,25 @@
 import UIKit
 
 class ViewController: UIViewController {
-
-    let numberPickerView = BFNumberPickerView.init(frame: CGRect(x: 0, y: 100, width: UIScreen.main.bounds.width * 0.3, height: 50), font: UIFont.boldSystemFont(ofSize: 60))
+    
+    let baseView = UIView()
+    var numberPickerView: BFNumberPickerView?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.systemRed
-        view.addSubview(numberPickerView)
-        numberPickerView.backgroundColor = view.backgroundColor
+        view.addSubview(baseView)
+        baseView.snp.makeConstraints { make in
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+            make.height.equalTo(50)
+            make.center.equalToSuperview()
+        }
+        baseView.layoutIfNeeded()
+        baseView.backgroundColor = UIColor.systemBlue
+    
+        numberPickerView = BFNumberPickerView.init(frame: baseView.bounds)
+        baseView.addSubview(numberPickerView!)
+        numberPickerView!.backgroundColor = numberPickerView?.superview!.backgroundColor
         
         let randomButton = UIButton(type: .system)
         randomButton.setTitle("隨機數字", for: .normal)
@@ -32,6 +43,6 @@ class ViewController: UIViewController {
 
     @objc private func generateRandomNumber() {
         let randomNum = Int.random(in: 0...9999999999) // 生成 10 位隨機數
-        numberPickerView.number = randomNum // 更新數字顯示
+        numberPickerView!.number = randomNum // 更新數字顯示
     }
 }

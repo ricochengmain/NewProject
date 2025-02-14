@@ -36,22 +36,18 @@ class BFNumberPickerView: UIView {
         }
     }
     
-    convenience init(frame: CGRect, font: UIFont) {
-        self.init(frame: frame)
-        originWidth = frame.width
-        pickerFont = font
-    }
-    
-    private override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
+        originFrame = frame
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private var pickerFont: UIFont?
-    private var originWidth: CGFloat = 0
+    private let pickerFont: UIFont = UIFont.boldSystemFont(ofSize: 24)
+    private var originFrame: CGRect = .zero
+    private let pickerHeight: CGFloat = 50
     
     private func initSubviews(number: Int) {
         self.subviews.forEach { $0.removeFromSuperview() }
@@ -61,7 +57,7 @@ class BFNumberPickerView: UIView {
         var x: CGFloat = 0
         var digitIndex = formattedNumber.filter { $0.isNumber }.count // 最高位數字的索引
         
-        let font: UIFont = pickerFont!
+        let font: UIFont = pickerFont
         let text = "9"
         let attributes: [NSAttributedString.Key: Any] = [.font: font]
         let size = text.size(withAttributes: attributes)
@@ -74,7 +70,7 @@ class BFNumberPickerView: UIView {
         
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: (self.frame.size.height - height) * 0.5, width: width, height: height), font: pickerFont!)
+                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: (pickerHeight - height) * 0.5, width: width, height: height), font: pickerFont)
                 pickerSubView.backgroundColor = UIColor.clear
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
@@ -99,21 +95,28 @@ class BFNumberPickerView: UIView {
             }
         }
         
-        if ((self.subviews.last?.frame.maxX)! - originWidth > 4 && pickerFont!.pointSize > 24) {
-            let smallerFont = pickerFont!.withSize(pickerFont!.pointSize - 1)
-            pickerFont = smallerFont
-            initSubviews(number: number)
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.number = number
-            }
+        self.frame.size.width = (self.subviews.last?.frame.maxX)!
+        
+        if let superview = self.superview, let lastSubview = self.subviews.last {
+            let maxX = lastSubview.frame.maxX + lastSubview.frame.minX
+            let maxY = lastSubview.frame.height
             
-            self.frame.size.width = max(originWidth, self.subviews.last?.frame.maxX ?? 0)
+            let scaleX = superview.bounds.width / maxX
+            let scaleY = superview.bounds.height / maxY
             
-            if let superview = self.superview {
-                let centerX = (superview.frame.width - self.frame.width) / 2
-                self.frame.origin.x = centerX
-            }
+            // 取最小的縮放比例，確保等比縮小且不超過 originFrame
+            let scale = min(1.0, scaleX, scaleY)
+
+            // 縮放視圖
+            self.transform = CGAffineTransform(scaleX: scale, y: scale)
+
+            let scaleFrame: CGRect = self.frame
+            let y = scaleX < scaleY ? (superview.bounds.height - scaleFrame.height) / 2 : 0
+            self.frame = CGRect(x: (superview.bounds.width - scaleFrame.width) / 2, y: y, width: scaleFrame.width, height: scaleFrame.height)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+            self.number = number
         }
     }
     
