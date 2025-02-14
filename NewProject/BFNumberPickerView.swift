@@ -38,7 +38,7 @@ class BFNumberPickerView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        originFrame = frame
+        self.originFrame = frame
     }
     
     required init?(coder: NSCoder) {
@@ -50,6 +50,8 @@ class BFNumberPickerView: UIView {
     private let pickerHeight: CGFloat = 50
     
     private func initSubviews(number: Int) {
+        self.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+        self.frame = originFrame
         self.subviews.forEach { $0.removeFromSuperview() }
         
         let formattedNumber = formatNumberWithCommas(number)
@@ -70,7 +72,7 @@ class BFNumberPickerView: UIView {
         
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: (pickerHeight - height) * 0.5, width: width, height: height), font: pickerFont)
+                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), font: pickerFont)
                 pickerSubView.backgroundColor = UIColor.clear
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
@@ -95,17 +97,18 @@ class BFNumberPickerView: UIView {
             }
         }
         
-        self.frame.size.width = (self.subviews.last?.frame.maxX)!
-        
         if let superview = self.superview, let lastSubview = self.subviews.last {
+            self.frame.size.width = lastSubview.frame.maxX
+            self.frame.size.height = lastSubview.frame.size.height
+            
             let maxX = lastSubview.frame.maxX + lastSubview.frame.minX
             let maxY = lastSubview.frame.height
             
-            let scaleX = superview.bounds.width / maxX
-            let scaleY = superview.bounds.height / maxY
+            let scaleX = originFrame.size.width / maxX
+            let scaleY = originFrame.size.height / maxY
             
             // 取最小的縮放比例，確保等比縮小且不超過 originFrame
-            let scale = min(1.0, scaleX, scaleY)
+            let scale = scaleX < scaleY ? max(1.0, scaleX, scaleY) : min(1.0, scaleX, scaleY)
 
             // 縮放視圖
             self.transform = CGAffineTransform(scaleX: scale, y: scale)
