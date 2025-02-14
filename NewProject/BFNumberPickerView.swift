@@ -8,6 +8,12 @@
 import UIKit
 import SnapKit
 
+let pickerFont: UIFont = UIFont.systemFont(ofSize: 24, weight: .bold)
+let pickerAttributes: [NSAttributedString.Key: Any] = [
+    .foregroundColor: UIColor.systemYellow, // 設定顏色
+    .font: pickerFont // 設定字體
+]
+
 class BFNumberPickerView: UIView {
     
     override init(frame: CGRect) {
@@ -50,22 +56,30 @@ class BFNumberPickerView: UIView {
         var x: CGFloat = 0
         var digitIndex = formattedNumber.filter { $0.isNumber }.count // 最高位數字的索引
         
+        let font = pickerFont
+        let text = "9"
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        let size = text.size(withAttributes: attributes)
+        let width: CGFloat = size.width * 2
+        let height: CGFloat = size.height * 2
+        
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView(frame: CGRect(x: x, y: 0, width: 50, height: 50))
+                let pickerSubView = BFNumberPickerSubView(frame: CGRect(x: x, y: 0, width: width, height: height))
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
                 digitIndex -= 1 // 更新 tag 為下一個數字
                 addSubview(pickerSubView)
-                x += pickerSubView.frame.width - 36
+                x += pickerSubView.frame.width - size.width
             } else if char == "," {
-                x += 18
+                x += (size.width / 2)
                 let separatorLabel = UILabel()
-                separatorLabel.text = String(char)
+                separatorLabel.attributedText = NSAttributedString(string: String(char), attributes: pickerAttributes)
                 separatorLabel.sizeToFit()
-                separatorLabel.frame = CGRect(x: x, y: 50 - separatorLabel.frame.height - 10, width: separatorLabel.frame.width, height: separatorLabel.frame.height)
+                separatorLabel.frame = CGRect(x: x, y: 0, width: separatorLabel.frame.width, height: height)
+                separatorLabel.contentMode = .bottom
                 addSubview(separatorLabel)
-                x = separatorLabel.frame.maxX - 18
+                x = separatorLabel.frame.maxX - (size.width / 2)
             }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -126,6 +140,15 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         print("Selected: \(numbers[row % numbers.count])")
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
+        return self.frame.width
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+        let text = numbers[row % numbers.count]
+        return NSAttributedString(string: text, attributes: pickerAttributes)
     }
     
     @objc func selectRow(index: Int) {
