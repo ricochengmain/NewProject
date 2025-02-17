@@ -42,7 +42,6 @@ class BFNumberPickerView: UIView {
     
     private let pickerFont: UIFont = UIFont.boldSystemFont(ofSize: 24)
     private var originFrame: CGRect = .zero
-    private let pickerHeight: CGFloat = 50
     
     private func initSubviews(number: Int) {
         self.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
@@ -62,7 +61,7 @@ class BFNumberPickerView: UIView {
         let height: CGFloat = size.height * 2
         let separatorAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.systemYellow, // 設定顏色
-            .font: UIFont.systemFont(ofSize: 24) // 設定字體
+            .font: pickerFont // 設定字體
         ]
         
         for char in formattedNumber {
