@@ -12,37 +12,32 @@ class BFNumberPickerView: UIView {
     
     var number: Int = 0 {
         didSet {
-            let formattedNumber = formatNumberWithCommas(number)
-            let newDigitCount = formattedNumber.filter { $0.isNumber }.count
-            let oldDigitCount = self.subviews.filter { $0 is BFNumberPickerSubView }.count
-            
-            // 如果位數不同，清除所有 subview，重新初始化
-            if newDigitCount != oldDigitCount {
-                self.subviews.forEach { $0.removeFromSuperview() }
-                initSubviews(number: number)
-                return
-            }
-            
-            // 更新數字
-            var digitIndex = newDigitCount // 從最高位數開始
-            for char in formattedNumber {
-                if let digit = char.wholeNumberValue {
-                    if let pickerSubView = self.viewWithTag(digitIndex) as? BFNumberPickerSubView {
-                        pickerSubView.selectRow(index: digit) // 設置數字對應的 row
+            if let superview = self.superview {
+                superview.layoutIfNeeded()
+                self.originFrame = superview.bounds
+                let formattedNumber = formatNumberWithCommas(number)
+                let newDigitCount = formattedNumber.filter { $0.isNumber }.count
+                let oldDigitCount = self.subviews.filter { $0 is BFNumberPickerSubView }.count
+                
+                // 如果位數不同，清除所有 subview，重新初始化
+                if newDigitCount != oldDigitCount {
+                    self.subviews.forEach { $0.removeFromSuperview() }
+                    initSubviews(number: number)
+                    return
+                }
+                
+                // 更新數字
+                var digitIndex = newDigitCount // 從最高位數開始
+                for char in formattedNumber {
+                    if let digit = char.wholeNumberValue {
+                        if let pickerSubView = self.viewWithTag(digitIndex) as? BFNumberPickerSubView {
+                            pickerSubView.selectRow(index: digit) // 設置數字對應的 row
+                        }
+                        digitIndex -= 1 // 移動到下一位數
                     }
-                    digitIndex -= 1 // 移動到下一位數
                 }
             }
         }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.originFrame = frame
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     private let pickerFont: UIFont = UIFont.boldSystemFont(ofSize: 24)
