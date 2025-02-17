@@ -28,14 +28,15 @@ class ViewController: UIViewController {
         numberPickerView!.backgroundColor = numberPickerView?.superview!.backgroundColor
         
         let randomButton = UIButton(type: .system)
-        randomButton.setTitle("隨機數字", for: .normal)
+        randomButton.setTitle("0123456789", for: .normal)
         randomButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         randomButton.backgroundColor = UIColor.systemBlue
         randomButton.setTitleColor(.white, for: .normal)
         randomButton.layer.cornerRadius = 8
         randomButton.frame = CGRect(x: 50, y: 200, width: 150, height: 50)
+        randomButton.titleLabel?.font = UIFont(name: "Verdana-Bold", size: 18)
         randomButton.addTarget(self, action: #selector(generateRandomNumber), for: .touchUpInside)
-        
+//        UIFont(name: "Verdana-Bold", size: 18)
         view.addSubview(randomButton)
         self.generateRandomNumber()
     }

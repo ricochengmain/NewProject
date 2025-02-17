@@ -39,8 +39,17 @@ class BFNumberPickerView: UIView {
             }
         }
     }
-    
-    private let pickerFont: UIFont = UIFont.boldSystemFont(ofSize: 24)
+    let foregroundColor: UIColor = UIColor(red: 255.0/255.0, green: 240.0/255.0, blue: 0.0/255.0, alpha: 1.0)
+    let fontSize: CGFloat = 24
+
+    // 確保字體不會為 nil，避免崩潰
+    lazy var font = UIFont(name: "Verdana-Bold", size: fontSize) ?? UIFont.systemFont(ofSize: fontSize, weight: .black)
+
+    lazy var pickerAttributes: [NSAttributedString.Key: Any] = [
+        .foregroundColor: foregroundColor,
+        .font: font,
+        .strokeWidth: -10
+    ]
     private var originFrame: CGRect = .zero
     
     private func initSubviews(number: Int) {
@@ -53,20 +62,14 @@ class BFNumberPickerView: UIView {
         var x: CGFloat = 0
         var digitIndex = formattedNumber.filter { $0.isNumber }.count // 最高位數字的索引
         
-        let font: UIFont = pickerFont
-        let text = "9"
-        let attributes: [NSAttributedString.Key: Any] = [.font: font]
-        let size = text.size(withAttributes: attributes)
-        let width: CGFloat = size.width * 2
+        let text = "8"
+        let size = text.size(withAttributes: pickerAttributes)
+        let width: CGFloat = size.width * 2.1
         let height: CGFloat = size.height * 2
-        let separatorAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.systemYellow, // 設定顏色
-            .font: pickerFont // 設定字體
-        ]
         
         for char in formattedNumber {
             if char.wholeNumberValue != nil {
-                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), font: pickerFont)
+                let pickerSubView = BFNumberPickerSubView.init(frame: CGRect(x: x, y: 0, width: width, height: height), attributes: pickerAttributes)
                 pickerSubView.backgroundColor = UIColor.clear
                 pickerSubView.tag = digitIndex // 設置 tag，確保從最高位到最低位
                 pickerSubView.selectRow(index: 0)
@@ -82,6 +85,11 @@ class BFNumberPickerView: UIView {
                 x += (size.width / 2)
                 let separatorLabel = UILabel()
                 separatorLabel.backgroundColor = UIColor.clear
+                let separatorAttributes: [NSAttributedString.Key: Any] = [
+                    .foregroundColor: foregroundColor,
+                    .font: UIFont.boldSystemFont(ofSize: fontSize),
+                ]
+                
                 separatorLabel.attributedText = NSAttributedString(string: String(char), attributes: separatorAttributes)
                 separatorLabel.sizeToFit()
                 separatorLabel.frame = CGRect(x: x, y: height - maskHeight - separatorLabel.frame.height, width: separatorLabel.frame.width, height: separatorLabel.frame.height)
@@ -126,16 +134,16 @@ class BFNumberPickerView: UIView {
 }
 
 class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
-    private var pickerFont: UIFont?
+    private var pickerAttributes: [NSAttributedString.Key: Any]?
     fileprivate let pickerView = UIPickerView()
     private let numbers = Array(0...9).map { String($0) }
     
     private let topMask = UIView()
     private let bottomMask = UIView()
     
-    convenience init(frame: CGRect, font: UIFont) {
+    convenience init(frame: CGRect, attributes: [NSAttributedString.Key: Any]) {
         self.init(frame: frame)
-        pickerFont = font
+        pickerAttributes = attributes
     }
     
     override init(frame: CGRect) {
@@ -203,12 +211,8 @@ class BFNumberPickerSubView: UIView, UIPickerViewDelegate, UIPickerViewDataSourc
     }
     
     internal func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        let pickerAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor.systemYellow,
-            .font: pickerFont!
-        ]
         let text = numbers[row % numbers.count]
-        return NSAttributedString(string: text, attributes: pickerAttributes)
+        return NSAttributedString(string: text, attributes: pickerAttributes!)
     }
     
     @objc fileprivate  func selectRow(index: Int) {
